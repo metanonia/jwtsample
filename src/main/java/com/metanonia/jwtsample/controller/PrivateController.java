@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/feed")
-public class FeedController {
-    @GetMapping("/order")
+@RequestMapping("/private")
+public class PrivateController {
+    @GetMapping("/")
     public String orderPage() {
-        return "/feed/order";
+        return "/private/home";
     }
 }

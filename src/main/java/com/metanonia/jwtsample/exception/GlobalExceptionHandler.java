@@ -1,6 +1,6 @@
 package com.metanonia.jwtsample.exception;
 
-import com.metanonia.jwtsample.service.CommonResponse;
+import com.metanonia.jwtsample.core.CommonResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(RuntimeException.class)
     protected ResponseEntity<CommonResponse> handleRuntimeException(RuntimeException e) {
 

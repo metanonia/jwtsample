@@ -1,26 +1,25 @@
-package com.metanonia.jwtsample.service;
+package com.metanonia.jwtsample.provider.security;
 
+import com.metanonia.jwtsample.service.Hmac512PasswordEncoder;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
+
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        //String encrypted = BCrypt.hashpw("1234", BCrypt.gensalt());
         Hmac512PasswordEncoder hmac = new Hmac512PasswordEncoder("salt");
         String encrypted = hmac.encode("1234");
         return User.builder()
@@ -30,11 +29,9 @@ public class CustomUserDetailService implements UserDetailsService {
                 .build();
     }
 
-/**
-    private User createSpringSecurityUser(Member member) {
-        List<GrantedAuthority> grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority(member.getRole()));
+    private User createSpringSecurityUser(String username) {
+        List<GrantedAuthority> grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
         //TODO: username 에 email을 넣는 방법이 적합한지?
-        return new User(member.getEmail(), member.getPassword(), grantedAuthorities);
+        return new User(username, "1234", grantedAuthorities);
     }
- **/
 }

@@ -13,10 +13,16 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
+
     private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
+
+        //response.sendError(HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage());
+
+        //동작하지 않음!!
+        //throw new CustomAuthenticationException();
 
         handlerExceptionResolver.resolveException(request, response, null, accessDeniedException);
     }

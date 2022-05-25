@@ -1,8 +1,11 @@
-package com.metanonia.jwtsample.service;
+package com.metanonia.jwtsample.provider.security;
 
+import com.metanonia.jwtsample.core.security.AuthTokenProvider;
 import com.metanonia.jwtsample.exception.TokenValidFailedException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,18 +14,18 @@ import org.springframework.security.core.userdetails.User;
 
 import java.security.Key;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class JwtAuthTokenProvider implements AuthTokenProvider<JwtAuthToken> {
+
     private final Key key;
     private static final String AUTHORITIES_KEY = "role";
 
     public JwtAuthTokenProvider(String base64Secret) {
-        Base64.Decoder decoder = Base64.getDecoder();
-        byte[] keyBytes = decoder.decode(base64Secret);
+        byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 

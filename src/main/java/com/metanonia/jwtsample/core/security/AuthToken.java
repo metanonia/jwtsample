@@ -1,4 +1,4 @@
-package com.metanonia.jwtsample.service;
+package com.metanonia.jwtsample.core.security;
 
 public interface AuthToken<T> {
     boolean validate();

@@ -1,6 +1,8 @@
-package com.metanonia.jwtsample.service;
+package com.metanonia.jwtsample.provider.security;
 
+import com.metanonia.jwtsample.core.security.AuthToken;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SecurityException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,6 +12,7 @@ import java.util.Optional;
 
 @Slf4j
 public class JwtAuthToken implements AuthToken<Claims> {
+
     @Getter
     private final String token;
     private final Key key;
@@ -34,7 +37,7 @@ public class JwtAuthToken implements AuthToken<Claims> {
     @Override
     public Claims getData() {
         try {
-            return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         } catch (SecurityException e) {
             log.info("Invalid JWT signature.");
         } catch (MalformedJwtException e) {
@@ -54,7 +57,7 @@ public class JwtAuthToken implements AuthToken<Claims> {
         String token = Jwts.builder()
                 .setSubject(id)
                 .claim(AUTHORITIES_KEY, role)
-                .signWith(SignatureAlgorithm.HS256, key)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(expiredDate)
                 .compact();
 

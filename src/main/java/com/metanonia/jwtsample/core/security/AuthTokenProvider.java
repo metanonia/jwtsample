@@ -1,4 +1,4 @@
-package com.metanonia.jwtsample.service;
+package com.metanonia.jwtsample.core.security;
 
 import org.springframework.security.core.Authentication;
 

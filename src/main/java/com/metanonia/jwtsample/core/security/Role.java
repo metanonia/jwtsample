@@ -1,4 +1,4 @@
-package com.metanonia.jwtsample.configuration;
+package com.metanonia.jwtsample.core.security;
 
 import lombok.Getter;
 
