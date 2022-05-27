@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private User createSpringSecurityUser(String username) {
         List<GrantedAuthority> grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-        //TODO: username 에 email을 넣는 방법이 적합한지?
+
         return new User(username, "1234", grantedAuthorities);
     }
 }

@@ -9,16 +9,19 @@ import com.metanonia.jwtsample.provider.security.JwtAuthTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Optional;
 
 @Slf4j
@@ -28,10 +31,30 @@ public class JwtService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtAuthTokenProvider jwtAuthTokenProvider;
     private final static long LOGIN_RETENTION_MINUTES = 30;
+    
+    @Autowired
+    CustomUserDetailService customUserDetailService;
 
-    public CommonResponse login(JSONObject loginInfo) {
-        String username = loginInfo.getString("uername");
-        String password = loginInfo.getString("password");
+    public CommonResponse login(HashMap<String, Object> loginInfo) {
+        String username = (String) loginInfo.get("username");
+        String password = (String) loginInfo.get("password");
+        
+        // UserId / password 체크
+        UserDetails user = customUserDetailService.loadUserByUsername(username);
+        Hmac512PasswordEncoder hmac = new Hmac512PasswordEncoder("salt");
+
+        if(hmac.matches(password, user.getPassword())) {
+            JwtAuthToken jwtAuthToken = (JwtAuthToken) createAuthToken(user.getUsername());
+
+            return CommonResponse.builder()
+                    .code("LOGIN_SUCCESS")
+                    .status(200)
+                    .message(jwtAuthToken.getToken())
+                    .build();
+        } else {
+            throw new LoginFailedException();
+        }
+        /**
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, password);
 
@@ -51,23 +74,14 @@ public class JwtService {
 
         // 정상 이용자 인지 확인
         if(true) {  // 정상이용자이면
-            String UserInfo = "Tempo UserInfo";
-            JwtAuthToken jwtAuthToken = (JwtAuthToken) createAuthToken(UserInfo);
 
-            return CommonResponse.builder()
-                    .code("LOGIN_SUCCESS")
-                    .status(200)
-                    .message(jwtAuthToken.getToken())
-                    .build();
         }
-        else {
-            throw new LoginFailedException();
-        }
+         **/
     }
 
-    public AuthToken createAuthToken(String UserInfo) {
+    public AuthToken createAuthToken(String username) {
 
         Date expiredDate = Date.from(LocalDateTime.now().plusMinutes(LOGIN_RETENTION_MINUTES).atZone(ZoneId.systemDefault()).toInstant());
-        return jwtAuthTokenProvider.createAuthToken("username", "role", expiredDate);
+        return jwtAuthTokenProvider.createAuthToken(username, "ROLE_USER", expiredDate);
     }
 }
